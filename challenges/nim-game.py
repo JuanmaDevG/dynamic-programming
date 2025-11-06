@@ -40,15 +40,25 @@ class P004:
         """
         Programación dinámica recursiva pura.
         Encuentra la primera jugada ganadora si existe.
+
+        NOTA:
+            Asumiendo que tengo el primer turno, una jugada buena para mi, es en la que mi
+            opnente me deveulva -1, para ganar yo.
+            Habiendo mas de una jugada buena, devuelvo la primera.
+
+            Esta recursion hace que el oponente también nos busque la ruina, y aun con esas
+            podamos elegir la jugada en la que pierde.
+
+            Por eso, si me quedo sin fichas en la mesa, devuelvo -1, porque asumo que he
+            perdido.
         """
         if n <= 0:
             return -1
 
-        res = -1
         for k in range(1, min(n, self.M) + 1):
             if self.pdr(n - k) < 0:
-                res = k
-        return res
+                return k
+        return -1
 
     def pdr_a(self, n: int) -> int:
         """
@@ -64,6 +74,7 @@ class P004:
         for k in range(1, min(n, self.M) + 1):
             if self.pdr_a(n - k) < 0:
                 res = k
+                break
 
         self.A[n] = res
         return res
@@ -79,6 +90,7 @@ class P004:
             for k in range(1, min(i, self.M) + 1):
                 if A[i - k] < 0:
                     res = k
+                    break
             A[i] = res
 
         return A[n]
