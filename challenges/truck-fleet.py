@@ -82,14 +82,13 @@ class P010:
         for idx, cur_w in enumerate(w):
             swapper = w[idx]
             w[idx] = w[0]
-            subarray = w[1:]
             new_t = t - cur_w
             if new_t == 0:
-                n_trucks = min(n_trucks, 1 + self.pdr_a(700, subarray))
+                n_trucks = min(n_trucks, 1 + self.pdr_a(700, w[1:]))
             elif new_t < 0:
-                n_trucks = min(n_trucks, 1 + self.pdr_a(700 - cur_w, subarray))
+                n_trucks = min(n_trucks, 1 + self.pdr_a(700 - cur_w, w[1:]))
             else:
-                n_trucks = min(n_trucks, self.pdr_a(new_t, subarray))
+                n_trucks = min(n_trucks, self.pdr_a(new_t, w[1:]))
             w[idx] = swapper
 
         self.A[state_key] = n_trucks
