@@ -1,15 +1,16 @@
-#TODO: later use numba
 #import numba
 import numpy as np
 from typing import Dict
 
 from copy import copy
 
+from typing import List, Tuple
+
 
 """
     This is essentially the backpack problem but modified.
 
-    Having a fleet of trucks that can afford to carry a maximum of 700 tons of goods
+    Having a fleet of trucks, each one can afford to carry a maximum of 700 tons of goods
     that weight w1, w2, w3, ..., wn. Each of them less than 700 tons. We want to know
     how many trucks we need as minimum to transport the N goods. The goods cannot be
     fragmented.
@@ -95,13 +96,30 @@ class P010:
         return n_trucks
 
 
-    def pdi(self, t: int, w: np.ndarray) -> [int]:
-        if len(w) == 0:
-            return 1 if t < 700 else 0
+    def pdi(self, t: int, w: np.ndarray) -> int:
+        from dataclasses import dataclass
+        INT_INF = np.iinfo(np.int64).max
 
-        #TODO: code
+        @dataclass
+        class Frame:
+            t: int
+            w: np.ndarray
+            state_key: Tuple[int, int, int]
+            best: int
+
+        state_stack = [Frame(t, w, (t, len(w), w.sum()), INT_INF)]
+        while state_stack:
+            cur_state = state_stack[-1]
+            if not cur_state.w:
+                state_stack.pop()
+                if cur_state.t == 700:
+
+        state_key = (t, len(w), w.sum())
+        if state_key in self.A:
+            return self.A[state_key]
 
         return n_trucks
+
 
     def best(self, data: str) -> int:
         self.init(data)
