@@ -102,23 +102,30 @@ class P010:
 
         @dataclass
         class Frame:
+            idx: int #TODO: to avoid developing the full stack tree
             t: int
             w: np.ndarray
             state_key: Tuple[int, int, int]
             best: int
 
-        state_stack = [Frame(t, w, (t, len(w), w.sum()), INT_INF)]
+        base_state_key = (t, len(w), w.sum())
+        state_stack = [Frame(0, t, w, base_state_key, INT_INF)]
         while state_stack:
-            cur_state = state_stack[-1]
-            if not cur_state.w:
+            cur_state = state_stack.w[-1]
+            if len(cur_state.w) == 0:
                 state_stack.pop()
-                if cur_state.t == 700:
+                self.A[cur_state.state_key] = 1 if t < 700 else 0
+                continue
 
-        state_key = (t, len(w), w.sum())
-        if state_key in self.A:
-            return self.A[state_key]
+            if cur_state.idx < len(cur_state.w):
+                cur_state.w[0], cur_state.w[cur_state.idx] = cur_state.w[cur_state.idx], cur_state.w[0]
+                f = Frame(0, t - cur_state.w[idx], w[1:], (t, len(w[1:]), w[1:].sum()), INT_INF)
+                #TODO: a full stack of frames with the length of this
+            else:
+                state_stack.pop()
+                self.A[cur_state.state_key] = cur_state.best
 
-        return n_trucks
+        return self.A[base_state_key]
 
 
     def best(self, data: str) -> int:
