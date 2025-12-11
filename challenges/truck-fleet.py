@@ -97,35 +97,31 @@ class P010:
 
 
     def pdi(self, t: int, w: np.ndarray) -> int:
-        from dataclasses import dataclass
+        #WARNING: THI DOES NOT WORK
+        if not w: return 0
+        from typing import annotations
         INT_INF = np.iinfo(np.int64).max
 
-        @dataclass
         class Frame:
-            idx: int #TODO: to avoid developing the full stack tree
-            t: int
-            w: np.ndarray
-            state_key: Tuple[int, int, int]
-            best: int
+            def __init__(self, t: int, w: np.ndarray, best: int = INT_INF, next_frame: Frame = None, prev_frame: Frame = None):
+                self.idx = 0
+                self.t = t
+                self.w = w
+                self.state_key = (t, len(w), w.sum())
+                self.best = best
+                self.next = next_f
+                self.prev = prev_f
 
-        base_state_key = (t, len(w), w.sum())
-        state_stack = [Frame(0, t, w, base_state_key, INT_INF)]
-        while state_stack:
-            cur_state = state_stack.w[-1]
-            if len(cur_state.w) == 0:
-                state_stack.pop()
-                self.A[cur_state.state_key] = 1 if t < 700 else 0
-                continue
+            def replace(self, t: int, w: np.ndarray, best: int = INT_INF):
+                self.__init__(t, w, best, self.next, self.prev)
 
-            if cur_state.idx < len(cur_state.w):
-                cur_state.w[0], cur_state.w[cur_state.idx] = cur_state.w[cur_state.idx], cur_state.w[0]
-                f = Frame(0, t - cur_state.w[idx], w[1:], (t, len(w[1:]), w[1:].sum()), INT_INF)
-                #TODO: a full stack of frames with the length of this
-            else:
-                state_stack.pop()
-                self.A[cur_state.state_key] = cur_state.best
+        base_frame = Frame(t, w)
+        f = base_frame
+        for i in range(1, len(w)):
+            f.next = Frame(t, w[1:], prev_frame = f)
+            f = f.next
 
-        return self.A[base_state_key]
+        #TODO: rest of the code with a linked list (I'm tired, better later
 
 
     def best(self, data: str) -> int:
