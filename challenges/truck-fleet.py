@@ -131,6 +131,38 @@ class P010:
         #return self.pdi(self.T, self.W)
 
 
+    def pdr_a_vec(self, t: int, w: np.ndarray) -> int:
+        if len(w) == 0:
+            return 1 if t < 700 else 0
+
+        state_key = (t, len(w), w.sum())
+        if state_key in self.A:
+            return self.A[state_key]
+
+        n_trucks = np.inf
+        for idx, cur_w in enumerate(w):
+            swapper = w[idx]
+            w[idx] = w[0]
+            new_t = t - cur_w
+            params = (#TODO: set params inside the if and exec function and then compare results and assign truck number with index
+            if new_t == 0:
+                n_trucks = min(n_trucks, 1 + self.pdr_a(700, w[1:]))
+            elif new_t < 0:
+                n_trucks = min(n_trucks, 1 + self.pdr_a(700 - cur_w, w[1:]))
+            else:
+                n_trucks = min(n_trucks, self.pdr_a(new_t, w[1:]))
+            w[idx] = swapper
+
+        self.A[state_key] = n_trucks
+        return n_trucks
+
+
+    def best_solution(data: str) -> List[int]:
+        self.init(data)
+        self.assigned_truck = [0 for _ in self.W]
+        pdr_a_vec(self.T, self.W)
+
+
 if __name__ == "__main__":
     p = P010()
     data = "300 300 340 360 700 600 500 400 300 200 100 50 450 340 230 120"
